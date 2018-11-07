@@ -24,7 +24,7 @@ private:
 	QLineSeries *series;
 
 public:
-	ChartHolder(QWidget *Parent);
+	ChartHolder(QWidget *Parent = 0);
 	~ChartHolder();
 
 	void CreateChart(std::vector<std::pair< double, double > > data, QString name);
