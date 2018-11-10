@@ -78,6 +78,7 @@ public:
 	void CreateLabels();
 
 	void CalculateData();
+	void ApplyChart();
 };
 
 

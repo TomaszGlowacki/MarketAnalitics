@@ -3,59 +3,99 @@
 
 ChartHolder::ChartHolder(QWidget *Parent)
 {
-	chartView = new QChartView(chart);
-	chartView->setRenderHint(QPainter::Antialiasing);
-	chartView->setGeometry(100, 100, 2000, 1000);
-	chartView->setEnabled(true);
-	chartView->setParent(Parent);
+	ChartView = new QChartView(Chart);
+	ChartView->setRenderHint(QPainter::Antialiasing);
+	ChartView->setGeometry(100, 100, 2000, 1000);
+	ChartView->setEnabled(true);
+	ChartView->setParent(Parent);
+	LinearParametersAplied = false;
 }
 
 ChartHolder::~ChartHolder()
 {
-	delete( axisX );
-	delete( axisY );
-	delete( series );
-	delete( chart );
-	delete( chartView );
+	delete( AxisX );
+	delete( AxisY );
+	delete( Series );
+	delete( Chart );
+	delete( ChartView );
+}
+
+void ChartHolder::ApplyLinearFunctionParameters(double linearFunctionParameterA, double linearFunctionParameterB)
+{
+	LinearFunctionParameterA = linearFunctionParameterA;
+	LinearFunctionParameterB = linearFunctionParameterB;
+	LinearParametersAplied = true;
 }
 
 void ChartHolder::CreateChart(std::vector<std::pair< double, double > > data, QString name)
 {
-	series = new QLineSeries();
+	if (data.size() == 0) return;  // no need to create chart if there is no data
+
+	Series = new QLineSeries();
 	QDateTime momentInTime;
-	std::pair<double, double> pp;
+	std::pair<double, double> tempPair;
 	for (unsigned int i = 0; i < data.size(); ++i)
 	{
-		pp = data[i];
-		momentInTime.setMSecsSinceEpoch(pp.first);
-		series->append(momentInTime.toMSecsSinceEpoch(), pp.second);
+		tempPair = data[i];
+		momentInTime.setMSecsSinceEpoch(tempPair.first);
+		Series->append(momentInTime.toMSecsSinceEpoch(), tempPair.second);
 	}
 
 	QChart* chartToDelete = NULL;
-	if (chartView->chart())
+	if (ChartView->chart())
 	{
-		chartToDelete = chartView->chart();
+		chartToDelete = ChartView->chart();
 	}
 
-	chart = new QChart();
-	chart->legend()->hide();
-	chart->addSeries(series);
-	chart->setTitle(name);
+	Series->setColor(QColor(0, 0, 255));
+	Chart = new QChart();
+	Chart->legend()->hide();
+	Chart->addSeries(Series);
+	Chart->setTitle(name);
 
-	axisX = new QDateTimeAxis();
-	axisX->setTickCount(10);
-	axisX->setFormat("MMM yyyy");
-	axisX->setTitleText("Date");
-	chart->addAxis(axisX, Qt::AlignBottom);
-	series->attachAxis(axisX);
+	AxisX = new QDateTimeAxis();
+	AxisX->setTickCount(10);
+	AxisX->setFormat("MMM yyyy");
+	AxisX->setTitleText("Date");
+	Chart->addAxis(AxisX, Qt::AlignBottom);
+	Series->attachAxis(AxisX);
 
-	axisY = new QValueAxis();
-	axisY->setLabelFormat("%i");
-	axisY->setTitleText("Value");
-	chart->addAxis(axisY, Qt::AlignLeft);
-	series->attachAxis(axisY);
+	AxisY = new QValueAxis();
+	AxisY->setLabelFormat("%i");
+	AxisY->setTitleText("Value");
+	Chart->addAxis(AxisY, Qt::AlignLeft);
+	Series->attachAxis(AxisY);
 
-	chartView->setChart(chart);   // WHY ?!
+	ChartView->setChart(Chart);   // WHY ?!
 	delete(chartToDelete);
+
+	if (LinearParametersAplied)
+	{
+		AddLinearChart(data);
+	}
+	LinearParametersAplied = false;
+
 };
 
+void ChartHolder::AddLinearChart(std::vector<std::pair< double, double > > &data)
+{
+	//LinearChart = new QChart();
+	LinearSeries = new QLineSeries();
+	QDateTime momentInTime;
+	std::pair<double, double> tempPair;
+	for (unsigned int i = 0; i < data.size(); ++i)
+	{
+		tempPair = data[i];
+		momentInTime.setMSecsSinceEpoch(tempPair.first);
+		LinearSeries->append(momentInTime.toMSecsSinceEpoch(), LinearFunctionParameterA * i + LinearFunctionParameterB );
+	}
+	Chart->addSeries(LinearSeries);
+
+	LinearAxisX = AxisX;
+	LinearAxisX->setTickCount(10);
+	LinearSeries->attachAxis(LinearAxisX);
+
+	LinearAxisY = AxisY;
+	LinearSeries->attachAxis(LinearAxisY);
+	LinearSeries->setColor(QColor(255,0,0));
+}

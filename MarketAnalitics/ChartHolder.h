@@ -17,18 +17,30 @@ private:
 	
 	QWidget *Parent;
 
-	QChartView *chartView;
-	QChart *chart;
-	QDateTimeAxis *axisX;
-	QValueAxis *axisY;
-	QLineSeries *series;
+	QChartView *ChartView;
+	QChart *Chart;
+	QDateTimeAxis *AxisX;
+	QValueAxis *AxisY;
+	QLineSeries *Series;
+
+	QChart *LinearChart;
+	QLineSeries *LinearSeries;
+	QValueAxis *LinearAxisY;
+	QDateTimeAxis *LinearAxisX;
+
+	bool LinearParametersAplied;
+	double LinearFunctionParameterA;
+	double LinearFunctionParameterB;
+	
+	void AddLinearChart(std::vector<std::pair< double, double > > &data);
 
 public:
 	ChartHolder(QWidget *Parent = 0);
 	~ChartHolder();
 
+	void ApplyLinearFunctionParameters(double linearFunctionParameterA, double linearFunctionParameterB);
 	void CreateChart(std::vector<std::pair< double, double > > data, QString name);
-
+	
 };
 
 

@@ -54,5 +54,25 @@ std::vector< std::pair<double, double> > AnaliticCalculations::SetOfRatesOfProfi
 	return tempData;
 }
 
+std::pair<double, double> AnaliticCalculations::LeastSquares(std::vector< std::pair<double, double> > data)
+{
+	double SumX = 0;
+	double SumY = 0;
+	double SumXX = 0;
+	double SumXY = 0;
 
+	for (unsigned int i = 0; i < data.size(); ++i)
+	{
+		SumX += i;
+		SumY += data[i].second;
+		SumXX += (i*i);
+		SumXY += (i*data[i].second);
+	}
+
+	double a = (data.size() * SumXY - SumX*SumY) / ( data.size()*SumXX - SumX*SumX );
+	double b = SumY / data.size() - (a * SumX / data.size());
+
+	return std::pair<double, double>(a, b);
+
+}
 

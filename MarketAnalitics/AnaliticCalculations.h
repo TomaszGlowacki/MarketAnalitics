@@ -16,6 +16,8 @@ public:
 	
 	double RateOfProfit(double begin, double end);
 	std::vector< std::pair<double, double> > SetOfRatesOfProfit( std::vector< std::pair<double, double> > data );
+
+	std::pair<double, double> LeastSquares(std::vector< std::pair<double, double> > data);
 };
 
 

@@ -66,14 +66,22 @@ void Window::CalculateData()
 	}
 }
 
+void Window::ApplyChart()
+{
+	Fund *fund = AllFunds[CurrentFund];
+	std::pair<double, double> tempPair = ACalculator.LeastSquares(fund->getData());
+	Chart->ApplyLinearFunctionParameters(tempPair.first, tempPair.second);
+	Chart->CreateChart(AllFunds[CurrentFund]->getData(), AllFunds[CurrentFund]->getName());
+	CalculateData();
+}
+
 void Window::NextFund()
 {
 	if (AllFunds.size() != 0) 
 	{
 		if (CurrentFund == AllFunds.size() - 1) CurrentFund = 0;
 		else CurrentFund++;
-		Chart->CreateChart(AllFunds[CurrentFund]->getData(), AllFunds[CurrentFund]->getName());
-		CalculateData();
+		ApplyChart();
 	}
 }
 
@@ -83,8 +91,7 @@ void Window::PreviousFund()
 	{
 		if (CurrentFund == 0) CurrentFund = (int)AllFunds.size() - 1;
 		else CurrentFund--;
-		Chart->CreateChart(AllFunds[CurrentFund]->getData(), AllFunds[CurrentFund]->getName());
-		CalculateData();
+		ApplyChart();
 	}
 }
 
@@ -144,6 +151,7 @@ void Window::TakeData()
 	progressBar->setMaximum((int)setOfFundId.size()-1);
 	progressBar->setValue(0);
 	int progressBarValue = 0;
+	//for (unsigned int i = 0; i < 10; ++i)    // just few charts, do not download all while debug
 	for (unsigned int i = 0; i < setOfFundId.size(); ++i)
 	{
 		imageURL.setUrl(QString("https://www.mbank.pl/ajax/SFI/drawChart/?funds[]=" + setOfFundId[i]));
@@ -152,8 +160,7 @@ void Window::TakeData()
 		progressBar->setValue(++progressBarValue);
 	}
 
-	Chart->CreateChart(AllFunds[CurrentFund]->getData(), AllFunds[CurrentFund]->getName());
-	CalculateData();
+	ApplyChart();
 }
 
 Window::Window(QWidget *parent) : QWidget(parent)
