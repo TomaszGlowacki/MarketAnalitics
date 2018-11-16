@@ -3,6 +3,8 @@
 
 ChartHolder::ChartHolder(QWidget *Parent)
 {
+	RatioX = 1.0;
+	RatioY = 1.0;
 	ChartView = new QChartView(Chart);
 	ChartView->setRenderHint(QPainter::Antialiasing);
 	ChartView->setGeometry(100, 100, 2000, 1000);
@@ -18,6 +20,22 @@ ChartHolder::~ChartHolder()
 	delete( Series );
 	delete( Chart );
 	delete( ChartView );
+}
+
+QChartView* ChartHolder::GetWidgetOfChart()
+{
+	return ChartView;
+}
+
+void ChartHolder::SetRatio(double ratioX, double ratioY)
+{
+	RatioX = ratioX;
+	RatioY = ratioY;
+}
+
+void ChartHolder::CreateChartView()
+{
+	ChartView->setGeometry(100 * RatioX, 100 * RatioY, 2000 * RatioX, 1000 * RatioY);
 }
 
 void ChartHolder::ApplyLinearFunctionParameters(double linearFunctionParameterA, double linearFunctionParameterB)

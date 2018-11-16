@@ -16,8 +16,11 @@
 #include <QTWidgets\QLabel>
 #include <QTWidgets\QProgressBar>
 #include <QTWidgets\QMessageBox>
+#include <QTWidgets\QTreeView>
+#include <QTWidgets\QLayout>
 
 #include <QTGui\QScreen>
+#include <QTGui\QStandardItemModel>
 
 #include <QTNetwork\qtnetworkglobal.h>
 
@@ -33,8 +36,10 @@ class Window : public QWidget
 	Q_OBJECT
 
 private:
-	int ResolutionHeight;
-	int ResolutionWidth;
+	double ResolutionHeight;
+	double ResolutionWidth;
+	double RatioX;
+	double RatioY;
 
 	QPushButton *LoadDataButton;
 	QProgressBar *progressBar;
@@ -65,6 +70,9 @@ private:
 	QLabel *RateOfProfitLabel;
 	QLabel *RateOfProfitLabelValue;
 
+	QTreeView *TreeView;
+	QStandardItemModel *TreeViewModel;
+
 	public slots:
 	void slotButtonClicked(bool checked = 0);
 	void load();
@@ -79,6 +87,12 @@ public:
 
 	void CalculateData();
 	void ApplyChart();
+	void SetWindowSize();
+
+	void AddTextToTreeView(int row, QString label, QString value);
+	void AddTextToTreeView(int row, QString label, int value);
+	void AddTextToTreeView(int row, QString label, double value);
+	void ResetTreeViewContent();
 };
 
 

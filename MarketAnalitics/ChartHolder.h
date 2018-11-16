@@ -11,10 +11,11 @@
 
 QT_CHARTS_USE_NAMESPACE
 
-class ChartHolder
+class ChartHolder: public QWidget
 {
 private:
-	
+	double RatioX;
+	double RatioY;
 	QWidget *Parent;
 
 	QChartView *ChartView;
@@ -37,10 +38,12 @@ private:
 public:
 	ChartHolder(QWidget *Parent = 0);
 	~ChartHolder();
-
+	
+	void CreateChartView();
+	void SetRatio(double ratioX, double ratioY);
 	void ApplyLinearFunctionParameters(double linearFunctionParameterA, double linearFunctionParameterB);
 	void CreateChart(std::vector<std::pair< double, double > > data, QString name);
-	
+	QChartView* GetWidgetOfChart();
 };
 
 

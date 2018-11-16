@@ -51,6 +51,24 @@ void Window::load()
 	AllFunds.push_back(fund);
 }
 
+void Window::AddTextToTreeView(int row, QString label, double value)
+{
+	AddTextToTreeView(row, label, QString::number(value, 'f', 2));
+}
+
+void Window::AddTextToTreeView(int row, QString label, int value)
+{
+	AddTextToTreeView(row, label, QString::number(value));
+}
+
+void Window::AddTextToTreeView(int row, QString label, QString value)
+{
+	QStandardItem *item = new QStandardItem(label);
+	TreeViewModel->setItem(row, 0, item);
+	item = new QStandardItem(value);
+	TreeViewModel->setItem(row, 1, item);
+}
+
 void Window::CalculateData()
 {
 	if (AllFunds[CurrentFund]) 
@@ -63,6 +81,17 @@ void Window::CalculateData()
 		VarianceLabelValue->setText(QString::number(ACalculator.Variance(fund->getData()), 'f', 2));
 		StandardDeviationLabelValue->setText(QString::number(ACalculator.StandardDeviation(fund->getData()), 'f', 2));
 		RateOfProfitLabelValue->setText(QString::number(ACalculator.RateOfProfit(fund->getData()[0].second, fund->getData()[fund->getData().size() - 1].second), 'f', 2));
+		
+		AddTextToTreeView(0, "Id", fund->getId());
+		AddTextToTreeView(1, "Name", fund->getName()); 
+		AddTextToTreeView(2, "Amount", (int)fund->getData().size());
+		AddTextToTreeView(3, "Average", ACalculator.Average(fund->getData()));
+		AddTextToTreeView(4, "Variance", ACalculator.Variance(fund->getData()));
+		AddTextToTreeView(5, "Standard Deviation", ACalculator.StandardDeviation(fund->getData()));
+		AddTextToTreeView(6, "Rate Of profit", ACalculator.RateOfProfit(fund->getData()[0].second, fund->getData()[fund->getData().size() - 1].second));
+		//AddTextToTreeView(7, "Fund Id", fund->getId());
+
+		TreeView->resizeColumnToContents(0);
 	}
 }
 
@@ -163,13 +192,36 @@ void Window::TakeData()
 	ApplyChart();
 }
 
-Window::Window(QWidget *parent) : QWidget(parent)
+void Window::SetWindowSize() 
 {
 	QScreen *screen = QGuiApplication::primaryScreen();
 	QRect  screenGeometry = screen->geometry();
 	ResolutionHeight = screenGeometry.height();
 	ResolutionWidth = screenGeometry.width();
+	// a:b = c:d   // c = ad/b  , d = bc/a
 	//setFixedSize(2000, 1000);
+	
+	double RefX = 3840;
+	double RefY = 2160;
+
+	RatioX = ResolutionWidth / RefX;
+	RatioY = ResolutionHeight / RefY;
+
+	resize(ResolutionWidth/RefX , ResolutionHeight / RefY);
+}
+
+void Window::ResetTreeViewContent()
+{
+	TreeViewModel->clear();
+	QStringList Headers;
+	Headers << "Wskaznik" << "Wartosc";
+	TreeViewModel->setHorizontalHeaderLabels(Headers);
+};
+
+Window::Window(QWidget *parent) : QWidget(parent)
+{
+	SetWindowSize();
+	setGeometry(100 * RatioX, 100 * RatioY, 3000 * RatioX, 1500 * RatioY);
 	CurrentFund = 0;
 	progressBar = new QProgressBar(this);
 	progressBar->setRange(0, 100);
@@ -194,6 +246,49 @@ Window::Window(QWidget *parent) : QWidget(parent)
 
 	Chart = new ChartHolder(this);    // need to add geometry
 	CreateLabels();
+
+	TreeView = new QTreeView();
+	TreeViewModel = new QStandardItemModel(0,2);
+	TreeView->setRootIsDecorated(false);
+	TreeView->setModel(TreeViewModel);
+	ResetTreeViewContent();
+
+	for (int row = 0; row < 4; ++row) {
+		for (int column = 0; column < 2; ++column) {
+			
+		}
+	}
+
+	
+
+	QHBoxLayout *MainLayout = new QHBoxLayout;
+	QVBoxLayout *ChartLayout = new QVBoxLayout;
+	QHBoxLayout *ButtonLayout = new QHBoxLayout;
+
+	/*
+	QSizePolicy spLeft(QSizePolicy::Preferred, QSizePolicy::Preferred);
+	spLeft.setHorizontalStretch(4);
+	Chart->GetWidgetOfChart()->setSizePolicy(spLeft);
+	QSizePolicy spRight(QSizePolicy::Preferred, QSizePolicy::Preferred);
+	spRight.setHorizontalStretch(1);
+	TreeView->setSizePolicy(spRight);
+	*/
+
+	MainLayout->setContentsMargins(5,5,5,30);
+	MainLayout->addLayout(ChartLayout,4);
+	MainLayout->addWidget(TreeView,1);
+	
+	ChartLayout->addWidget(Chart->GetWidgetOfChart());
+	ChartLayout->addLayout(ButtonLayout);
+	
+	ButtonLayout->addWidget(LoadDataButton);
+	ButtonLayout->addWidget(PreviousFundButton);
+	ButtonLayout->addWidget(NextFundButton);
+	ButtonLayout->addWidget(progressBar);
+
+
+	setLayout(MainLayout);
+
 	
 };
 
