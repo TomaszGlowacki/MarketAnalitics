@@ -51,22 +51,42 @@ void Window::load()
 	AllFunds.push_back(fund);
 }
 
-void Window::AddTextToTreeView(int row, QString label, double value)
+void Window::AddTextToTreeViewFunds(int row, int id, QString name)
 {
-	AddTextToTreeView(row, label, QString::number(value, 'f', 2));
+	AddTextToTreeViewFunds(row, QString::number(id), name);
 }
 
-void Window::AddTextToTreeView(int row, QString label, int value)
+void Window::AddTextToTreeViewFunds(int row, double id, QString name)
 {
-	AddTextToTreeView(row, label, QString::number(value));
+	AddTextToTreeViewFunds(row, QString::number(id), name);
 }
 
-void Window::AddTextToTreeView(int row, QString label, QString value)
+void Window::AddTextToTreeViewFunds(int row, QString id, QString name)
+{
+	QStandardItem *item = new QStandardItem(QString::number(row));
+	TreeViewModelFunds->setItem(row, 0, item);
+	item = new QStandardItem(id);
+	TreeViewModelFunds->setItem(row, 1, item);
+	item = new QStandardItem(name);
+	TreeViewModelFunds->setItem(row, 2, item);
+}
+
+void Window::AddTextToTreeViewProperties(int row, QString label, double value)
+{
+	AddTextToTreeViewProperties(row, label, QString::number(value, 'f', 2));
+}
+
+void Window::AddTextToTreeViewProperties(int row, QString label, int value)
+{
+	AddTextToTreeViewProperties(row, label, QString::number(value));
+}
+
+void Window::AddTextToTreeViewProperties(int row, QString label, QString value)
 {
 	QStandardItem *item = new QStandardItem(label);
-	TreeViewModel->setItem(row, 0, item);
+	TreeViewModelProperties->setItem(row, 0, item);
 	item = new QStandardItem(value);
-	TreeViewModel->setItem(row, 1, item);
+	TreeViewModelProperties->setItem(row, 1, item);
 }
 
 void Window::CalculateData()
@@ -74,24 +94,17 @@ void Window::CalculateData()
 	if (AllFunds[CurrentFund]) 
 	{
 		Fund *fund = AllFunds[CurrentFund];
-		FundIdLabelValue->setText(fund->getId());
-		FundNameLabelValue->setText(fund->getName());
-		AmountOfDataLabelValue->setText(QString::number(fund->getData().size()));
-		AverageLabelValue->setText(QString::number(ACalculator.Average(fund->getData()), 'f', 2));
-		VarianceLabelValue->setText(QString::number(ACalculator.Variance(fund->getData()), 'f', 2));
-		StandardDeviationLabelValue->setText(QString::number(ACalculator.StandardDeviation(fund->getData()), 'f', 2));
-		RateOfProfitLabelValue->setText(QString::number(ACalculator.RateOfProfit(fund->getData()[0].second, fund->getData()[fund->getData().size() - 1].second), 'f', 2));
-		
-		AddTextToTreeView(0, "Id", fund->getId());
-		AddTextToTreeView(1, "Name", fund->getName()); 
-		AddTextToTreeView(2, "Amount", (int)fund->getData().size());
-		AddTextToTreeView(3, "Average", ACalculator.Average(fund->getData()));
-		AddTextToTreeView(4, "Variance", ACalculator.Variance(fund->getData()));
-		AddTextToTreeView(5, "Standard Deviation", ACalculator.StandardDeviation(fund->getData()));
-		AddTextToTreeView(6, "Rate Of profit", ACalculator.RateOfProfit(fund->getData()[0].second, fund->getData()[fund->getData().size() - 1].second));
+
+		AddTextToTreeViewProperties(0, "Id", fund->getId());
+		AddTextToTreeViewProperties(1, "Name", fund->getName());
+		AddTextToTreeViewProperties(2, "Amount", (int)fund->getData().size());
+		AddTextToTreeViewProperties(3, "Average", ACalculator.Average(fund->getData()));
+		AddTextToTreeViewProperties(4, "Variance", ACalculator.Variance(fund->getData()));
+		AddTextToTreeViewProperties(5, "Standard Deviation", ACalculator.StandardDeviation(fund->getData()));
+		AddTextToTreeViewProperties(6, "Rate Of profit", ACalculator.RateOfProfit(fund->getData()[0].second, fund->getData()[fund->getData().size() - 1].second));
 		//AddTextToTreeView(7, "Fund Id", fund->getId());
 
-		TreeView->resizeColumnToContents(0);
+		TreeViewProperties->resizeColumnToContents(0);
 	}
 }
 
@@ -126,40 +139,7 @@ void Window::PreviousFund()
 
 void Window::CreateLabels()
 {
-	int labelStartX = 2300;
-	int labelStartY = 100;
-	int labelDistanceX = 300;
-	int labelDistanceY = 50;
-
-	FundIdLabel = new QLabel("Id:", this);
-	FundIdLabel->setGeometry(labelStartX, labelStartY + labelDistanceY, 300, 100);
-	FundNameLabel = new QLabel("Nazwa:", this);
-	FundNameLabel->setGeometry(labelStartX, labelStartY + labelDistanceY * 2, 300, 100);
-	AmountOfDataLabel = new QLabel("Ilosc Danych:", this);
-	AmountOfDataLabel->setGeometry(labelStartX, labelStartY + labelDistanceY * 3, 300, 100);
-	AverageLabel = new QLabel("Srednia:", this);
-	AverageLabel->setGeometry(labelStartX, labelStartY + labelDistanceY * 4, 300, 100);
-	VarianceLabel = new QLabel("Variancja:", this);
-	VarianceLabel->setGeometry(labelStartX, labelStartY + labelDistanceY * 5, 300, 100);
-	StandardDeviationLabel = new QLabel("Odchylenie standardowe:", this);
-	StandardDeviationLabel->setGeometry(labelStartX, labelStartY + labelDistanceY * 6, 300, 100);
-	RateOfProfitLabel = new QLabel("Stopa zwrotu:", this);
-	RateOfProfitLabel->setGeometry(labelStartX, labelStartY + labelDistanceY * 7, 300, 100);
-
-	FundIdLabelValue = new QLabel("", this);
-	FundIdLabelValue->setGeometry(labelStartX + labelDistanceX, labelStartY + labelDistanceY, 300, 100);
-	FundNameLabelValue = new QLabel("", this);
-	FundNameLabelValue->setGeometry(labelStartX + labelDistanceX, labelStartY + labelDistanceY * 2, 300, 100);
-	AmountOfDataLabelValue = new QLabel("0", this);
-	AmountOfDataLabelValue->setGeometry(labelStartX + labelDistanceX, labelStartY + labelDistanceY * 3, 300, 100);
-	AverageLabelValue = new QLabel("0", this);
-	AverageLabelValue->setGeometry(labelStartX + labelDistanceX, labelStartY + labelDistanceY * 4, 300, 100);
-	VarianceLabelValue = new QLabel("0", this);
-	VarianceLabelValue->setGeometry(labelStartX + labelDistanceX, labelStartY + labelDistanceY * 5, 300, 100);
-	StandardDeviationLabelValue = new QLabel("0", this);
-	StandardDeviationLabelValue->setGeometry(labelStartX + labelDistanceX, labelStartY + labelDistanceY * 6, 300, 100);
-	RateOfProfitLabelValue = new QLabel("0", this);
-	RateOfProfitLabelValue->setGeometry(labelStartX + labelDistanceX, labelStartY + labelDistanceY * 7, 300, 100);
+	// old function
 }
 
 void Window::TakeData()
@@ -189,6 +169,12 @@ void Window::TakeData()
 		progressBar->setValue(++progressBarValue);
 	}
 
+	ResetTreeViewFundsContent();
+	for (unsigned int i = 0; i < AllFunds.size(); ++i)
+	{
+		AddTextToTreeViewFunds(i, AllFunds[i]->getId(), AllFunds[i]->getName());
+	}
+	
 	ApplyChart();
 }
 
@@ -210,13 +196,36 @@ void Window::SetWindowSize()
 	resize(ResolutionWidth/RefX , ResolutionHeight / RefY);
 }
 
-void Window::ResetTreeViewContent()
+void Window::ResetTreeViewFundsContent()
 {
-	TreeViewModel->clear();
+	TreeViewModelFunds->clear();
 	QStringList Headers;
-	Headers << "Wskaznik" << "Wartosc";
-	TreeViewModel->setHorizontalHeaderLabels(Headers);
+	Headers << " " << "Id" << "Nazwa Funduszu";
+	TreeViewModelFunds->setHorizontalHeaderLabels(Headers);
+
+	TreeViewFunds->setModel(TreeViewModelFunds);
+
+	TreeViewFunds->setMinimumWidth(500);
+	TreeViewFunds->setMaximumWidth(500);
+
+	TreeViewFunds->setColumnWidth(0, 10);
+	TreeViewFunds->setColumnWidth(1, 30);
+	TreeViewFunds->setColumnWidth(2, 250);
+}
+
+void Window::ResetTreeViewPropertiesContent()
+{
+	TreeViewModelProperties->clear();
+	QStringList Headers;
+	Headers << "Nazwa" << "Wartosc";
+	TreeViewModelProperties->setHorizontalHeaderLabels(Headers);
 };
+
+void Window::TreeViewFundsClick(const QModelIndex &index)
+{
+	CurrentFund = TreeViewModelFunds->itemFromIndex(index)->row();
+	ApplyChart();
+}
 
 Window::Window(QWidget *parent) : QWidget(parent)
 {
@@ -247,36 +256,30 @@ Window::Window(QWidget *parent) : QWidget(parent)
 	Chart = new ChartHolder(this);    // need to add geometry
 	CreateLabels();
 
-	TreeView = new QTreeView();
-	TreeViewModel = new QStandardItemModel(0,2);
-	TreeView->setRootIsDecorated(false);
-	TreeView->setModel(TreeViewModel);
-	ResetTreeViewContent();
-
-	for (int row = 0; row < 4; ++row) {
-		for (int column = 0; column < 2; ++column) {
-			
-		}
-	}
-
+	TreeViewFunds = new QTreeView();
+	TreeViewFunds->installEventFilter(this);
+	TreeViewModelFunds = new QStandardItemModel(0,3 );
 	
+	ResetTreeViewFundsContent();
+	TreeViewFunds->setRootIsDecorated(false);
+
+	connect(TreeViewFunds, SIGNAL(clicked(QModelIndex)), this, SLOT(TreeViewFundsClick(QModelIndex)));
+	connect(TreeViewFunds, SIGNAL(activated(QModelIndex)), this, SLOT(TreeViewFundsClick(QModelIndex)));
+
+	TreeViewProperties = new QTreeView();
+	TreeViewModelProperties = new QStandardItemModel(0,2);
+	TreeViewProperties->setRootIsDecorated(false);
+	TreeViewProperties->setModel(TreeViewModelProperties);
+	ResetTreeViewPropertiesContent();
 
 	QHBoxLayout *MainLayout = new QHBoxLayout;
 	QVBoxLayout *ChartLayout = new QVBoxLayout;
 	QHBoxLayout *ButtonLayout = new QHBoxLayout;
 
-	/*
-	QSizePolicy spLeft(QSizePolicy::Preferred, QSizePolicy::Preferred);
-	spLeft.setHorizontalStretch(4);
-	Chart->GetWidgetOfChart()->setSizePolicy(spLeft);
-	QSizePolicy spRight(QSizePolicy::Preferred, QSizePolicy::Preferred);
-	spRight.setHorizontalStretch(1);
-	TreeView->setSizePolicy(spRight);
-	*/
-
 	MainLayout->setContentsMargins(5,5,5,30);
+	MainLayout->addWidget(TreeViewFunds);
 	MainLayout->addLayout(ChartLayout,4);
-	MainLayout->addWidget(TreeView,1);
+	MainLayout->addWidget(TreeViewProperties,1);
 	
 	ChartLayout->addWidget(Chart->GetWidgetOfChart());
 	ChartLayout->addLayout(ButtonLayout);
@@ -289,7 +292,6 @@ Window::Window(QWidget *parent) : QWidget(parent)
 
 	setLayout(MainLayout);
 
-	
 };
 
 Window::~Window() 
@@ -303,21 +305,57 @@ Window::~Window()
 	delete(PreviousFundButton);
 	delete(NextFundButton);
 
-	delete(FundIdLabel);
-	delete(FundIdLabelValue);
-	delete(FundNameLabel);
-	delete(FundNameLabelValue);
-	delete(AmountOfDataLabel);
-	delete(AmountOfDataLabelValue);
-	delete(AverageLabel);
-	delete(AverageLabelValue);
-	delete(VarianceLabel);
-	delete(VarianceLabelValue);
-	delete(StandardDeviationLabel);
-	delete(StandardDeviationLabelValue);
-	delete(RateOfProfitLabel);
-	delete(RateOfProfitLabelValue);
-
 };
 
+bool Window::eventFilter(QObject* sender, QEvent* event)
+{
+	
+	if (sender == TreeViewFunds)
+	{
+		if (event->type() == QEvent::KeyPress)
+		{
+			QKeyEvent * keyEvent = (QKeyEvent*)(event);
+			if (keyEvent->key() == Qt::Key_Up)
+			{
+				PreviousFund();
+				TreeViewFunds->setCurrentIndex(TreeViewModelFunds->index(CurrentFund, 0));
+				return true;
+			} 
+			else if (keyEvent->key() == Qt::Key_Down)
+			{
+				NextFund();
+				TreeViewFunds->setCurrentIndex(TreeViewModelFunds->index(CurrentFund, 0));
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+	}
+	
+	return 0;
+}
 
+void Window::keyPressEvent(QKeyEvent *event)
+{
+	/*
+	if (event->type() == QEvent::KeyPress)
+	{
+		//QKeyEvent * keyEvent = (QKeyEvent*)(event);
+		if (TreeViewFunds->hasFocus()) 
+		{
+			QMessageBox::information(this, "Salam", "Control Key was ressed" + QString::number(event->key()));
+			if (event->key() == Qt::Key_Up)
+			{
+				PreviousFund();
+				return;
+			}
+			else if (event->key() == Qt::Key_Down)
+			{
+				NextFund();
+				return;
+			}
+		}
+	} */
+}

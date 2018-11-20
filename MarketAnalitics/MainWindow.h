@@ -20,8 +20,9 @@
 #include <QTWidgets\QLayout>
 
 #include <QTGui\QScreen>
+#include <QTcore\QItemSelectionModel>
 #include <QTGui\QStandardItemModel>
-
+#include <QTGui\QKeyEvent>
 #include <QTNetwork\qtnetworkglobal.h>
 
 #include "Downloader.h"
@@ -55,23 +56,16 @@ private:
 	unsigned int CurrentFund;
 	AnaliticCalculations ACalculator;
 
-	QLabel *FundIdLabel;
-	QLabel *FundIdLabelValue;
-	QLabel *FundNameLabel;
-	QLabel *FundNameLabelValue;
-	QLabel *AmountOfDataLabel;
-	QLabel *AmountOfDataLabelValue;
-	QLabel *AverageLabel;
-	QLabel *AverageLabelValue;
-	QLabel *VarianceLabel;
-	QLabel *VarianceLabelValue;
-	QLabel *StandardDeviationLabel;
-	QLabel *StandardDeviationLabelValue;
-	QLabel *RateOfProfitLabel;
-	QLabel *RateOfProfitLabelValue;
+	QTreeView *TreeViewFunds;
+	QStandardItemModel *TreeViewModelFunds;
+	QKeyEvent *KeyEvent;
 
-	QTreeView *TreeView;
-	QStandardItemModel *TreeViewModel;
+	QTreeView *TreeViewProperties;
+	QStandardItemModel *TreeViewModelProperties;
+
+protected:
+	bool eventFilter(QObject* sender, QEvent* event);
+	void keyPressEvent(QKeyEvent *event);
 
 	public slots:
 	void slotButtonClicked(bool checked = 0);
@@ -79,6 +73,7 @@ private:
 	void TakeData();
 	void NextFund();
 	void PreviousFund();
+	void TreeViewFundsClick(const QModelIndex &index);
 
 public:
 	Window(QWidget *parent = 0);
@@ -89,10 +84,16 @@ public:
 	void ApplyChart();
 	void SetWindowSize();
 
-	void AddTextToTreeView(int row, QString label, QString value);
-	void AddTextToTreeView(int row, QString label, int value);
-	void AddTextToTreeView(int row, QString label, double value);
-	void ResetTreeViewContent();
+	void AddTextToTreeViewFunds(int row, QString id, QString name);
+	void AddTextToTreeViewFunds(int row, int id, QString name);
+	void AddTextToTreeViewFunds(int row, double id, QString name);
+
+	void AddTextToTreeViewProperties(int row, QString label, QString value);
+	void AddTextToTreeViewProperties(int row, QString label, int value);
+	void AddTextToTreeViewProperties(int row, QString label, double value);
+
+	void ResetTreeViewFundsContent();
+	void ResetTreeViewPropertiesContent();
 };
 
 
